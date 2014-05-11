@@ -235,7 +235,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat startAn
         if(!_showLabel) return;
         NSString *label;
         if(_showPercentage)
-            label = [NSString stringWithFormat:@"%0.0f", layer.percentage*100];
+            label = [NSString stringWithFormat:@"%0.0f%%", layer.percentage*100];
         else
             label = (layer.text)?layer.text:[NSString stringWithFormat:@"%0.0f", layer.value];
         CGSize size = [label sizeWithFont:self.labelFont];
@@ -258,6 +258,14 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat startAn
 {
     if (_dataSource)
     {
+        CGRect frame = self.frame;
+        
+        self.pieRadius = MIN(frame.size.width/2, frame.size.height/2) - 10;
+        self.pieCenter = CGPointMake(frame.size.width/2, frame.size.height/2);
+        
+        self.labelRadius = self.pieRadius/2;
+        self.selectedSliceOffsetRadius = MAX(10, self.pieRadius/10);
+        
         CALayer *parentLayer = [_pieView layer];
         NSArray *slicelayers = [parentLayer sublayers];
         
@@ -656,7 +664,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat startAn
     if(!_showLabel) return;
     NSString *label;
     if(_showPercentage)
-        label = [NSString stringWithFormat:@"%0.0f", pieLayer.percentage*100];
+        label = [NSString stringWithFormat:@"%0.0f%%", pieLayer.percentage*100];
     else
         label = (pieLayer.text)?pieLayer.text:[NSString stringWithFormat:@"%0.0f", value];
     
@@ -673,6 +681,19 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat startAn
         [textLayer setBounds:CGRectMake(0, 0, size.width, size.height)];
     }
     [CATransaction setDisableActions:NO];
+}
+
+- (CGSize)intrinsicContentSize
+{
+    CGRect frame = self.frame;
+    
+    self.pieRadius = MIN(frame.size.width/2, frame.size.height/2) - 10;
+    self.pieCenter = CGPointMake(frame.size.width/2, frame.size.height/2);
+    
+    _labelRadius = _pieRadius/2;
+    _selectedSliceOffsetRadius = MAX(10, _pieRadius/10);
+    
+    return CGSizeMake(self.frame.size.width, self.frame.size.height);
 }
 
 @end
